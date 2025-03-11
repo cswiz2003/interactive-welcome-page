@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #5f6368;
+            font-size: 1.2rem;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #1a73e8;
+            border-radius: 5px;
+            outline: none;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .celebration {
+            display: none;
+            animation: popIn 0.5s ease-out;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        .back-button {
+            background-color: #34a853;
+            margin-top: 15px;
+        }
+        .back-button:hover {
+            background-color: #2d8745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="welcome-form">
+            <h1>Welcome!</h1>
+            <p>Please enter your name:</p>
+            <div class="input-group">
+                <input type="text" id="nameInput" placeholder="Your name">
+            </div>
+            <button onclick="submitName()">Submit</button>
+        </div>
+        <div id="celebration" class="celebration">
+            <h1>🎉 Congratulations!</h1>
+            <p id="personalWelcome"></p>
+            <button class="back-button" onclick="goBack()">Go Back</button>
+        </div>
+    </div>
+
+    <script>
+        // Add keyboard event listeners when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Listen for keyboard events on the name input
+            document.getElementById('nameInput').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    submitName();
+                }
+            });
+
+            // Listen for Escape key on the document
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    // Only go back if we're on the celebration screen
+                    if (document.getElementById('celebration').style.display === 'block') {
+                        goBack();
+                    }
+                }
+            });
+        });
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animation = `confettiFall ${Math.random() * 2 + 1}s linear`;
+                document.body.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        function goBack() {
+            document.getElementById('celebration').style.display = 'none';
+            document.getElementById('welcome-form').style.display = 'block';
+            document.getElementById('nameInput').value = ''; // Clear the input field
+        }
+
+        function submitName() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (name === '') {
+                alert('Please enter your name!');
+                return;
+            }
+
+            document.getElementById('welcome-form').style.display = 'none';
+            const celebration = document.getElementById('celebration');
+            celebration.style.display = 'block';
+            document.getElementById('personalWelcome').textContent = 
+                `Welcome ${name}! We're so happy to have you here! 🎈`;
+            
+            // Create celebration effects
+            createConfetti();
+            
+            // Create more confetti every second for 3 seconds
+            let count = 0;
+            const confettiInterval = setInterval(() => {
+                createConfetti();
+                count++;
+                if (count >= 3) {
+                    clearInterval(confettiInterval);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html> 
